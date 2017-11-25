@@ -8,37 +8,15 @@ def _clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-class Building(dict):
-    @property
-    def name(self):
-        return self['name']
-
-    @property
-    def price(self):
-        return self['price']
-
-    @price.setter
-    def price(self, value):
-        self['price'] = value
-
-    @property
-    def prod(self):
-        return self['prod']
+class Building(object):
+    def __init__(self, name, price, prod):
+        self.name = name
+        self.price = price
+        self.prod = prod
 
     def __repr__(self):
         return 'Building(name={}, price={}, prod={})'.format(
                 self.name, self.price, self.prod)
-
-
-store = [
-    Building(name='Empty Box', price=10, prod=1),
-    Building(name='Scratching Post', price=100, prod=10),
-    Building(name='Kitten Perch', price=1000, prod=100),
-    Building(name='Delux Scratching Post', price=10000, prod=1000),
-    Building(name='Delux Kitten Perch', price=100000, prod=10000),
-    Building(name='Kitten Hotel', price=1000000, prod=100000),
-]
-store = collections.OrderedDict((i, s) for i, s in enumerate(store))
 
 
 class ClickHandler(threading.Thread):
@@ -64,7 +42,7 @@ class ClickHandler(threading.Thread):
         _clear()
         print('   Building         |Price        |Production')
         print('   -----------------|-------------|----------')
-        for index, building in store.items():
+        for index, building in self.stats.store.items():
             if self.stats.kitten_count < building.price:
                 break
             print('{}) {}\t|{} kittens\t|{} k/s'.format(
@@ -74,17 +52,16 @@ class ClickHandler(threading.Thread):
                 self.stats.kitten_count, self.stats.prod_per_sec))
 
         try:
-            selection = store[int(input())]
+            selection = self.stats.store[int(input())]
         except (ValueError, KeyError):
             return
 
         if self.stats.kitten_count < selection.price:
             return
 
-        with self.stats.prod_per_sec_lock:
-            self.stats.prod_per_sec += selection.prod
         with self.stats.kitten_count_lock:
             self.stats.kitten_count -= selection.price
+        self.stats.prod_per_sec += selection.prod
         selection.price = int(selection.price * 1.15)
 
 
@@ -114,7 +91,17 @@ class Stats(object):
         self.kitten_count_lock = threading.Lock()
 
         self.prod_per_sec = 0
-        self.prod_per_sec_lock = threading.Lock()
+
+        buildings = [
+            Building(name='Empty Box', price=10, prod=1),
+            Building(name='Scratching Post', price=100, prod=10),
+            Building(name='Kitten Perch', price=1000, prod=100),
+            Building(name='Delux Scratching Post', price=10000, prod=1000),
+            Building(name='Delux Kitten Perch', price=100000, prod=10000),
+            Building(name='Kitten Hotel', price=1000000, prod=100000),
+        ]
+        self.store = collections.OrderedDict((i, s) for i, s in
+                enumerate(buildings))
 
 
 def start_game():
