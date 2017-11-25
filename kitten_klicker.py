@@ -1,7 +1,7 @@
-import asyncio
 import collections
 import os
 import threading
+import time
 
 
 def _clear():
@@ -68,22 +68,24 @@ class GameEngine(threading.Thread):
         super(GameEngine, self).__init__(*args, **kwargs)
         self.daemon = True
 
-        self._last_update = None
         self._update_cycle = 1.0
-        self.loop = asyncio.get_event_loop()
         self.stats = stats
 
     def update(self):
-        self._last_update = self.loop.time()
-        next_update = self._last_update + self._update_cycle
-        self.loop.call_at(next_update, self.update)
-
         with self.stats.kitten_count_lock:
             self.stats.kitten_count += self.stats.prod_per_sec
 
     def run(self):
-        self.loop.call_soon(self.update)
-        self.loop.run_forever()
+        update_delta = self._update_cycle
+
+        while True:
+            time.sleep(update_delta)
+
+            start_time = time.time()
+            self.update()
+
+            elapsed_time = time.time() - start_time
+            update_delta = self._update_cycle - elapsed_time
 
 
 class Stats(object):
