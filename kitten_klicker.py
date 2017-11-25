@@ -38,13 +38,15 @@ class ClickHandler(object):
 
     def visit_store(self):
         _clear()
-        print('   Building         |Price        |Production')
-        print('   -----------------|-------------|----------')
+        print('   Building                 |Price          |Production')
+        print('   -------------------------|---------------|----------')
         for index, building in self.stats.store.items():
             if self.stats.kitten_count < building.price:
                 break
-            print('{}) {}\t|{} kittens\t|{} k/s'.format(
-                index, building.name, building.price, building.prod))
+            price = str(building.price) + ' kittens'
+            print('{}) {}|{}|{} k/s'.format(
+                index, building.name.ljust(25), price.ljust(15),
+                building.prod))
         print('\nYou currently have {} kittens '
                 'and are producing {} kittens per second'.format(
                 self.stats.kitten_count, self.stats.prod_per_sec))
