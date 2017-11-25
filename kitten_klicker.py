@@ -19,13 +19,11 @@ class Building(object):
                 self.name, self.price, self.prod)
 
 
-class ClickHandler(threading.Thread):
-    def __init__(self, stats, *args, **kwargs):
-        super(ClickHandler, self).__init__(*args, **kwargs)
-        self.daemon = True
+class ClickHandler(object):
+    def __init__(self, stats):
         self.stats = stats
 
-    def run(self):
+    def start(self):
         _clear()
         while True:
             click = input(
@@ -65,8 +63,11 @@ class ClickHandler(threading.Thread):
         selection.price = int(selection.price * 1.15)
 
 
-class GameEngine(object):
-    def __init__(self, stats):
+class GameEngine(threading.Thread):
+    def __init__(self, stats, *args, **kwargs):
+        super(GameEngine, self).__init__(*args, **kwargs)
+        self.daemon = True
+
         self._last_update = None
         self._update_cycle = 1.0
         self.loop = asyncio.get_event_loop()
@@ -80,7 +81,7 @@ class GameEngine(object):
         with self.stats.kitten_count_lock:
             self.stats.kitten_count += self.stats.prod_per_sec
 
-    def start(self):
+    def run(self):
         self.loop.call_soon(self.update)
         self.loop.run_forever()
 
@@ -108,13 +109,13 @@ def start_game():
     # Create the stats object
     stats = Stats()
 
-    # Start the click handler thread which will listen for click events
-    click_handler = ClickHandler(stats)
-    click_handler.start()
-
     # Start the game engine which holds the ioloop
     game_engine = GameEngine(stats)
     game_engine.start()
+
+    # Start the click handler thread which will listen for click events
+    click_handler = ClickHandler(stats)
+    click_handler.start()
 
 
 if __name__ == '__main__':
