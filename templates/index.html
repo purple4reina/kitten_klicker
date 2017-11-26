@@ -1,0 +1,32 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Kitten Klicker</title>
+    <script src="static/main.js"></script>
+</head>
+
+<body>
+    <h1>Kitten Klicker</h1>
+    <p>You currently have <count id="count">0</count> kittens</p>
+    <p>You are currently attracting <prod id="prod">0</prod> kittens per second</p>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Production</th>
+        </tr>
+
+    {% for building in store %}
+        <tr id="store_{{ loop.index0 }}" class="storeItem">
+            <td>{{ building.name }}</td>
+            <td>{{ building.price }} kittens</td>
+            <td>{{ building.prod }} kittens/second</td>
+        </tr>
+    {% endfor %}
+
+    </table>
+
+</body>
+
+</html>
