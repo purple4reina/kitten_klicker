@@ -1,4 +1,4 @@
-var ws = new WebSocket("ws://localhost:8080/ws");
+var ws = new WebSocket("ws://" + window.location.host + "/ws");
 
 ws.onmessage = function (e) {
     var value = JSON.parse(e.data);
