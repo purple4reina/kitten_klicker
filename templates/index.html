@@ -20,8 +20,8 @@
     {% for building in store %}
         <tr id="store_{{ loop.index0 }}" class="storeItem">
             <td>{{ building.name }}</td>
-            <td>{{ building.price }} kittens</td>
-            <td>{{ building.prod }} kittens/second</td>
+            <td>{{ "{:,.0f}".format(building.price) }} kittens</td>
+            <td>{{ "{:,.0f}".format(building.prod) }} kittens/second</td>
         </tr>
     {% endfor %}
 
