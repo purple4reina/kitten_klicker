@@ -1,4 +1,6 @@
-var ws = new WebSocket("ws://" + window.location.host + "/ws");
+var host = window.location.host;
+var proto = (window.location.protocol == "https:") ? "wss://" : "ws://"
+var ws = new WebSocket(proto + host + "/ws");
 
 ws.onmessage = function (e) {
     var value = JSON.parse(e.data);
