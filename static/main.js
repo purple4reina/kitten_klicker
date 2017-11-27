@@ -20,7 +20,13 @@ ws.onopen = function (e) {
         }
     };
 
-    document.onclick = function (e) {
+    var kittenImage = document.getElementById("kittenImage");
+    var origSize = kittenImage.style.width;
+    kittenImage.onmousedown = function (e) {
+        this.style.width = "49%";
         ws.send('click');
+    }
+    kittenImage.onmouseup = function(e) {
+        this.style.width = origSize;
     }
 }

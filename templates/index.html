@@ -2,13 +2,16 @@
 <head>
     <meta charset="utf-8">
     <title>Kitten Klicker</title>
+    <link rel="stylesheet" href="static/style.css">
     <script src="static/main.js"></script>
 </head>
 
 <body>
     <h1>Kitten Klicker</h1>
-    <p>You currently have <count id="count">0</count> kittens</p>
-    <p>You are currently attracting <prod id="prod">0</prod> kittens per second</p>
+    <p>You currently have <count id="count">0</count> kittens. Click the kitten
+    to attract more.</p>
+    <p>You are currently attracting <prod id="prod">0</prod> kittens per
+    second. Buy a toy to attract more.</p>
 
     <table>
         <tr>
@@ -26,6 +29,10 @@
     {% endfor %}
 
     </table>
+
+    <div>
+        <img src="static/kitten.png" alt="" id="kittenImage"/>
+    </div>
 
 </body>
 
