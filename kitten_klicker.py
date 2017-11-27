@@ -135,7 +135,7 @@ async def game(request):
     }
 
 
-if __name__ == '__main__':
+def make_app():
     app = aiohttp.web.Application()
     app.router.add_static('/static', 'static')
     aiohttp_jinja2.setup(app,
@@ -144,4 +144,11 @@ if __name__ == '__main__':
     app.router.add_get('/ws', ws_communicate)
     app.router.add_get('/', game)
 
+    return app
+
+
+app = make_app()
+
+
+if __name__ == '__main__':
     aiohttp.web.run_app(app)
