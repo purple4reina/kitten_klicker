@@ -3,8 +3,6 @@ import aiohttp_jinja2
 import asyncio
 import jinja2
 import json
-import threading
-import time
 
 
 class Building(object):
@@ -38,8 +36,7 @@ class ClickHandler(object):
         if data.startswith('store_'):
             self.visit_store(data)
         else:
-            with self.stats.kitten_count_lock:
-                self.stats.kitten_count += 1
+            self.stats.kitten_count += 1
         await self.ws.send_str(self.stats.to_json())
 
     def visit_store(self, data):
@@ -52,38 +49,26 @@ class ClickHandler(object):
         if self.stats.kitten_count < selection.price:
             return
 
-        with self.stats.kitten_count_lock:
-            self.stats.kitten_count -= selection.price
+        self.stats.kitten_count -= selection.price
         self.stats.prod_per_sec += selection.prod
 
 
-class GameEngine(threading.Thread):
+class GameEngine(object):
     def __init__(self, ws, stats, *args, **kwargs):
-        super(GameEngine, self).__init__(*args, **kwargs)
-        self.daemon = True
-
-        self._update_cycle = 1.0
         self.ws = ws
         self.stats = stats
-        self.loop = asyncio.get_event_loop()
 
     async def update(self):
-        with self.stats.kitten_count_lock:
-            self.stats.kitten_count += self.stats.prod_per_sec
-
+        self.stats.kitten_count += self.stats.prod_per_sec
         await self.ws.send_str(self.stats.to_json())
 
-    def run(self):
-        update_delta = self._update_cycle
-
+    async def run(self):
         while not self.ws.closed:
-            time.sleep(update_delta)
+            await asyncio.sleep(1.0)
+            asyncio.ensure_future(self.update())
 
-            start_time = time.time()
-            asyncio.run_coroutine_threadsafe(self.update(), self.loop)
-
-            elapsed_time = time.time() - start_time
-            update_delta = self._update_cycle - elapsed_time
+    def start(self):
+        asyncio.ensure_future(self.run())
 
 
 class Stats(object):
@@ -99,8 +84,6 @@ class Stats(object):
 
     def __init__(self):
         self.kitten_count = 0
-        self.kitten_count_lock = threading.Lock()
-
         self.prod_per_sec = 0
 
     def to_json(self):
@@ -117,7 +100,7 @@ async def ws_communicate(request):
     # Create the stats object
     stats = Stats()
 
-    # Start the game engine which holds the ioloop
+    # Start the game engine which updates the stats on a regular interval
     game_engine = GameEngine(ws, stats)
     game_engine.start()
 
