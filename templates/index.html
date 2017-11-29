@@ -21,7 +21,7 @@
         </tr>
 
     {% for building in store %}
-        <tr id="store_{{ loop.index0 }}" class="storeItem">
+        <tr id="store_{{ loop.index0 }}" class="storeItem clickable">
             <td>{{ building.name }}</td>
             <td>{{ "{:,.0f}".format(building.price) }} kittens</td>
             <td>{{ "{:,.0f}".format(building.prod) }} kittens/second</td>
@@ -31,7 +31,7 @@
     </table>
 
     <div>
-        <img src="static/kitten.png" alt="" id="kittenImage"/>
+        <img src="static/kitten.png" alt="" id="kittenImage" class="clickable"/>
     </div>
 
 </body>
