@@ -16,10 +16,10 @@ ws.onmessage = function (e) {
     var value = JSON.parse(e.data);
 
     count = value.kitten_count;
-    countElement.innerText = value.kitten_count;
+    countElement.innerText = value.kitten_count.toLocaleString();
 
     prod = value.prod_per_sec;
-    prodElement.innerText = value.prod_per_sec;
+    prodElement.innerText = value.prod_per_sec.toLocaleString();
 }
 
 ws.onopen = function (e) {
@@ -51,7 +51,7 @@ ws.onopen = function (e) {
 
     function update() {
         count = count + Math.floor(prod * cycleTime);
-        countElement.innerText = count;
+        countElement.innerText = count.toLocaleString();
     }
 
     async function updateKittenCount() {
